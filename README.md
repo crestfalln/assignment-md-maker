@@ -9,7 +9,7 @@ I wrote this script to automate the generation of md-files for my OOP-class assi
 #### Make:
 * Need zsh.
 * Compile replacer.
-* Add an alias for the binary in zsh called replacer-mine.
+* Make an alias in zsh called replacer-mine linked to the compiled executable
 
 #### Use:
 >Use md-make -t <template_file> -d <source_directory> -o <output_file> to create assignment files. 
