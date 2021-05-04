@@ -1,0 +1,109 @@
+#!/bin/zsh
+
+DIR=
+SRCDIR=
+BINDIR=
+INDIR=
+NAME=Himanshu\ Gupta
+ROLL=CSE49
+TEMPLATE=template.md
+OUT=
+TEMPFILE=/tmp/assign_md_make_temp
+ASSIGNMENTNO=
+
+while getopts ":d:s:b:i:n:r:t:o:" arg; 
+do
+  case $arg in
+    d) DIR=$OPTARG;;
+    s) SRCDIR=$OPTARG;;
+    b) BINDIR=$OPTARG;;
+    i) INDIR=$OPTARG;;
+    n) NAME=$OPTARG;;
+    r) ROLL=$OPTARG;;
+    t) TEMPLATE=$OPTARG;;
+    o) OUT=$OPTARG;;
+  esac
+done
+
+if [ -z $DIR ];
+then
+  echo "No source dir provided"
+  exit -1
+fi
+
+if [ -s $TEMPLATE ];
+then
+else
+  echo "template empty"
+  exit -1
+fi
+
+if [ -z $SRCDIR ];
+then
+  SRCDIR=$DIR/src
+fi
+
+if [ -z $BINDIR ];
+then
+  BINDIR=$DIR/bin
+fi
+
+if [ -z $INDIR ];
+then
+  INDIR=$DIR/input
+fi
+
+sed -n '/\(MAIN\)/q;p' $TEMPLATE > $TEMPFILE
+sed -e '1,/\(MAIN\)/ d' $TEMPLATE > $TEMPFILE.main
+cat $TEMPFILE.main > $TEMPFILE.main.cpy
+
+ASSIGNMENTNO=${DIR:t}
+ASSIGNMENTNO=${ASSIGNMENTNO:s/Assign//}
+
+if [ -z $OUT ]
+then
+  OUT=Assign$ASSIGNMENTNO.md
+fi
+
+sed -i "s/\$NO/$ASSIGNMENTNO/g" $TEMPFILE
+sed -i "s/\$NAME/$NAME/g" $TEMPFILE
+sed -i "s/\$ROLL/$ROLL/g" $TEMPFILE
+
+cat $TEMPFILE > $TEMPFILE.result
+
+i=1
+for file in $SRCDIR/*.cpp
+do
+  cat $TEMPFILE.main > $TEMPFILE.main.cpy
+  file=${file:r}
+  file=${file:t}
+  OUTPUT=$($BINDIR/$file.o < $INDIR/$file.txt)
+  INPUT=$(cat $INDIR/$file.txt)
+  CODE=$(cat $SRCDIR/$file.cpp)
+  QUESTION=$TEMPFILE.question
+  grep -o -P '(?<=//QUESTION ).*(?=)' $SRCDIR/$file.cpp >  $QUESTION
+  echo $OUTPUT > $TEMPFILE.output
+  OUTPUT=$TEMPFILE.output
+  sed -i 's/^/>/g' $OUTPUT
+  sed -i 's/$/  /g' $OUTPUT
+  echo $INPUT > $TEMPFILE.input
+  INPUT=$TEMPFILE.input
+  sed -i 's/^/>/g' $INPUT
+  sed -i 's/$/  /g' $INPUT
+  echo $CODE > $TEMPFILE.code
+  CODE=$TEMPFILE.code
+  replacer-mine '$QUES' $TEMPFILE.question $TEMPFILE.main.cpy
+  replacer-mine '$CODE' $TEMPFILE.code $TEMPFILE.main.cpy
+  replacer-mine '$INPUT' $TEMPFILE.input $TEMPFILE.main.cpy
+  replacer-mine '$OUTPUT' $TEMPFILE.output $TEMPFILE.main.cpy
+  sed -i "s~\$BINARY~\$\ $BINDIR\/$file\.o\ ~g" $TEMPFILE.main.cpy
+  sed -i "s~\$QNO~$file~g" $TEMPFILE.main.cpy
+  cat $TEMPFILE.main.cpy >> $TEMPFILE.result
+  echo "\n" >> $TEMPFILE.result
+done
+
+sed -i 's/\n/  /g' $TEMPFILE.result
+cp $TEMPFILE.result $OUT
+rm $TEMPFILE*
+
+
