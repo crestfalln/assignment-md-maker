@@ -6,10 +6,10 @@ I wrote this script to automate the generation of md-files for my OOP-class assi
 
 ### Usage
 
-#### Make
+#### Make:
 * Need zsh.
 * Compile replacer.
 * Add an alias for the binary in zsh called replacer-mine.
 
-#### Use
+#### Use:
 >Use md-make -t <template_file> -d <source_directory> -o <output_file> to create assignment files. 
