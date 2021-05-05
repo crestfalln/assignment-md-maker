@@ -57,4 +57,6 @@ int main(int argc, char *argv[])
     std::string keyword = argv[1];
     findAndReplace(*newfile , *replace ,keyword );
     file << *newfile;
+    delete newfile;
+    delete replace;
 }
