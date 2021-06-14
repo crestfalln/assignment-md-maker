@@ -13,8 +13,9 @@ std::string& findAndReplace(std::string& file , std::string& replace  , std::str
         {
             if(subs == keyword)
             {
+                file.erase(it - subs.length() - 1, subs.length()+1);
+                it = it - subs.length() - 1;
                 file.insert(it , replace);
-                file.erase(it - subs.length() , subs.length());
                 it+=replace.length();
             }
             subs.clear();
@@ -35,7 +36,9 @@ int main(int argc, char *argv[])
         std::ifstream replace_file(argv[2]);
         char tmp;
         while (replace_file.get(tmp))
+        {
             *replace+=tmp;
+        }
     }
 
     {

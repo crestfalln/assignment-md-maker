@@ -21,7 +21,7 @@ do
     n) NAME=$OPTARG;;
     r) ROLL=$OPTARG;;
     t) TEMPLATE=$OPTARG;;
-    o) OUT=$OPTARG;;
+    o) OUTDIR=$OPTARG;;
   esac
 done
 
@@ -29,6 +29,11 @@ if [ -z $DIR ];
 then
   echo "No source dir provided"
   exit -1
+fi
+
+if [ -z $OUTDIR ];
+then
+  OUTDIR=$DIR
 fi
 
 if [ -s $TEMPLATE ];
@@ -84,11 +89,11 @@ do
   grep -o -P '(?<=//QUESTION ).*(?=)' $SRCDIR/$file.cpp >  $QUESTION
   echo $OUTPUT > $TEMPFILE.output
   OUTPUT=$TEMPFILE.output
-  sed -i 's/^/>/g' $OUTPUT
+  #sed -i 's/^/>/g' $OUTPUT
   sed -i 's/$/  /g' $OUTPUT
   echo $INPUT > $TEMPFILE.input
   INPUT=$TEMPFILE.input
-  sed -i 's/^/>/g' $INPUT
+  #sed -i 's/^/>/g' $INPUT
   sed -i 's/$/  /g' $INPUT
   echo $CODE > $TEMPFILE.code
   CODE=$TEMPFILE.code
@@ -103,7 +108,7 @@ do
 done
 
 sed -i 's/\n/  /g' $TEMPFILE.result
-cp $TEMPFILE.result $OUT
+cp $TEMPFILE.result $OUTDIR/$OUT
 rm $TEMPFILE*
 
 
